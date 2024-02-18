@@ -1,5 +1,5 @@
-import HomePage from 'Q/components/pages/home'
-
-export default function Home() {
-  return <HomePage/>
+function Page() {
+  return <div>asdasd</div>;
 }
+
+export default Page;
