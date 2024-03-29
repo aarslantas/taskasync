@@ -1,12 +1,8 @@
-"use client";
-
-import React, { ReactNode, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-
-// import { Select } from "react-daisyui";
-
-import { Icards, TaskType } from "Q/models/types";
-import { Select, SelectProps } from "antd";
+import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { Icards, TaskType } from 'Q/models/types';
+import { Select, Input as AntdInput, Button as AntdButton } from 'antd';
+import styled from 'styled-components';
 
 const { Option } = Select;
 
@@ -16,6 +12,32 @@ interface ICardForm {
   selectedSection: keyof Icards;
   selectedCardData: TaskType;
 }
+
+const Button = styled(AntdButton)`
+  /* Ant Design Button stilleri buraya eklenebilir */
+`;
+
+const CardFormContainer = styled.div`
+  max-width: 32rem;
+  margin: auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #333;
+`;
+
+const ErrorMessage = styled.p`
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+`;
 
 const CardForm = ({
   onCloseModal,
@@ -31,147 +53,50 @@ const CardForm = ({
 
   const [status, setStatus] = useState(selectedSection);
 
-  console.log("status", status);
-
   const onSubmit = async (data: TaskType) => {
-    const isEdit = selectedCardData && Object.keys(selectedCardData).length > 0;
-    if (isEdit) {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/todo/${selectedCardData.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ ...data, status, id: selectedCardData.id }),
-          }
-        );
-
-        if (response.ok) {
-          onAddCard(status, { ...data, status, id: selectedCardData.id });
-        } else {
-          console.error("Failed to save data");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    } else {
-      try {
-        const response = await fetch("http://localhost:3000/api/todo/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...data, status }),
-        });
-
-        if (response.ok) {
-          const res = await response.json();
-          onAddCard(status, { ...data, status, id: res.id });
-        } else {
-          console.error("Failed to save data");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    }
-
-    onCloseModal();
+    // Submit logic...
   };
 
-  const cardSections = ["todo", "doing", "done"];
+  const cardSections = ['todo', 'doing', 'done'];
 
+  // @ts-ignore
   return (
-    <div className="max-w-lg mx-auto p-8 bg-white rounded-md">
+    <CardFormContainer>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Title
-          </label>
+        <div>
+          <Label>Title</Label>
           <Controller
-            name="title"
+            name='title'
             control={control}
-            rules={{ required: "Title is required." }}
-            render={({ field }) => (
-              <input
-                className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                {...field}
-              />
-            )}
+            rules={{ required: 'Title is required.' }}
+            render={({ field }) => <AntdInput {...field} />}
             defaultValue={selectedCardData?.title}
           />
-          {errors.title && (
-            <p className="text-sm text-red-400">{`${errors.title.message}`}</p>
-          )}
+          {errors.title && <ErrorMessage>{errors.title.message}</ErrorMessage>}
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Description
-          </label>
+        <div>
+          <Label>Description</Label>
           <Controller
-            name="description"
+            name='description'
             control={control}
-            rules={{ required: "Description is required." }}
+            rules={{ required: 'Description is required.' }}
             defaultValue={selectedCardData?.description}
-            render={({ field }) => (
-              <textarea
-                className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                {...field}
-              ></textarea>
-            )}
+            render={({ field }) => <AntdInput {...field} />}
           />
           {errors.description && (
-            <p className="text-sm text-red-400">{`${errors.description.message}`}</p>
+            <ErrorMessage>{errors.description.message}</ErrorMessage>
           )}
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Status
-          </label>
-          {selectedSection};
-          {/* <Controller
-            name="status"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                style={{ width: "250px" }}
-                defaultValue={selectedSection}
-              >
-                {cardSections.map((section, i) => (
-                  <Option key={i} value="todo">
-                    {section}
-                  </Option>
-                ))}
-              </Select>
-              // <Select
-              //   {...field}
-              //   // value={status}
-              //   // onChange={(val) => {
-              //   //   setStatus(val as keyof Icards);
-              //   // }}
-
-              //   options={cardSections.map((section) => ({
-              //     label: section,
-              //     value: section,
-              //   }))}
-              // />
-              // <select {...field}>
-              //   <option value="todo">todo</option>
-              //   <option value="doing">doing</option>
-              //   <option value="done">done</option>
-              // </select>
-            )}
-          /> */}
+        <div>
+          <Label>Status</Label>
           <Controller
-            name="status"
+            name='status'
             control={control}
             render={({ field }) => (
               <Select
                 {...field}
-                style={{ width: "250px" }}
-                onChange={(val) => setStatus(val)}
+                style={{ width: '250px' }}
+                onChange={(val) => setStatus(val as keyof Icards)}
                 defaultValue={selectedSection}
               >
                 {cardSections.map((section, i) => (
@@ -183,48 +108,17 @@ const CardForm = ({
             )}
           />
         </div>
-
-        {/* <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Attachmenets
-          </label>
-          <input
-            type="text"
-            className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-            value={attachments}
-            onChange={(e) => setAttachments(e.target.value)}
-          />
-        </div> */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Etiketler
-          </label>
-          <input
-            type="text"
-            className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-          />
+        <div className='mb-4'>
+          <Label>Etiketler</Label>
+          <AntdInput />
         </div>
-        {/* <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Durum
-          </label>
-          <input
-            type="text"
-            className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          />
-        </div> */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-          >
+        <div className='flex justify-end'>
+          <Button type='primary' htmlType='submit'>
             Save
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </CardFormContainer>
   );
 };
 

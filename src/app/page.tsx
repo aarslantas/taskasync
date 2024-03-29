@@ -1,5 +1,7 @@
+import { ContainerYellow } from "./styled";
+
 function Page() {
-  return <div>asdasd</div>;
+  return <ContainerYellow>asdasd</ContainerYellow>;
 }
 
 export default Page;
