@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "Q/components/layout/sidebar";
+import StyledComponentsRegistry from "Q/lib/registry";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,18 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className=" flex h-screen bg-red-300">
-          {/* <Sidebar />
-          <main className="flex-1 p-6">
-            <header className="mb-8 bg-red-400">
-              <h1 className="text-2xl font-bold">Dashboard</h1>
-            </header>
-            <div>{children}</div>
-          </main> */}
-          {children}
-        </div>
+    <html>
+      <body>
+        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
       </body>
     </html>
   );
